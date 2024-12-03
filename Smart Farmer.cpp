@@ -118,12 +118,46 @@ int main()
         }
         system("CLS");
         afisare_nivel(tarc);
-        cout << "Actiuni posibile:" << endl << "-Rotire piesa:tasta 'r'" << endl << "-Mutare piesa:tastele sageti" << "-Reselectare piesa:tasta Backspace";
+        if (playing)
+        {
+
+        selectare_actiune:cout << "Actiuni posibile:" << endl << "-Rotire piesa:tasta 'r'" << endl << "-Mutare piesa:tastele sageti" << " -Reselectare piesa:tasta Backspace\n";
         switch (getch())
         {
-            case :
-
+            case 'r':
+                roteste(piesa_curenta);
+                cout << "Aceasta este piesa dupa rotire:\n";
+                afisare_piesa(piesa_curenta);
+                getch();
+                goto selectare_actiune;
+                break;
+            case '\b':///backspace
+                goto selectare_piesa;
+                getch();
+                break;
+            case '37':///left arrow ?
+                getch();
+                break;
+            case '38':///up arrow ?
+                getch();
+                break;
+            case '39':///right arrow ?
+                getch();
+                break;
+            case '40':///down arrow ?
+                getch();
+                break;
+            case 27: ///ASCII 32=tasta escape
+                playing = false;
+                break;
+            default:
+                system("CLS");
+                afisare_nivel(tarc);
+                goto selectare_actiune;
+                break;
         }
+        }
+        
 
     }
 
