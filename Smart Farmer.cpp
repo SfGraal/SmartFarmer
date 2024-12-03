@@ -1,121 +1,15 @@
 #include <iostream>
+#include <conio.h>
+
+#include "unelte_piese.h"
+
 #pragma warning(disable : 4996)
 
 using namespace std;
 
-/*
-LEGENDA
-c-cai
-o-oi
-p-porci
-v-vaci
-g-gard
-q-colt/capat gard
-#-spatiu gol
-a-troaca
+char tarc[7][9];
+char piesa_curenta[7][7];
 
-nivel1+nivel2:dificultate start
-nivel3+nivel4:dificultate junior
-nivel5:dificultate master
-
-======
-CONDITII GARD
-g intalneste g = not ok
-orice alta combinatie = ok
-======
-*/
-char matrice_L[7][7];
-char matrice_gard_lung[7][7];
-char matrice_gard_scurt[7][7];
-
-void initializare_matrice_piese()
-{
-    FILE* fpiese = fopen("piese.txt", "r+");
-    char buffer;
-    ///initializare matrice piesa L
-    for (int i = 0; i < 7; i++)
-    {
-        for (int j = 0; j < 7; j++)
-        {
-            fread(&matrice_L[i][j], sizeof(char), 1, fpiese);
-            fread(&buffer, sizeof(char), 1, fpiese);
-        }
-        fread(&buffer, sizeof(char), 1, fpiese);
-    }
-    ///initializare matrice piesa gard lung
-    for (int i = 0; i < 7; i++)
-    {
-        for (int j = 0; j < 7; j++)
-        {
-            fread(&matrice_gard_lung[i][j], sizeof(char), 1, fpiese);
-            fread(&buffer, sizeof(char), 1, fpiese);
-        }
-        fread(&buffer, sizeof(char), 1, fpiese);
-    }
-    ///initializare matrice piesa gard scurt
-    for (int i = 0; i < 7; i++)
-    {
-        for (int j = 0; j < 7; j++)
-        {
-            fread(&matrice_gard_scurt[i][j], sizeof(char), 1, fpiese);
-            fread(&buffer, sizeof(char), 1, fpiese);
-        }
-        fread(&buffer, sizeof(char), 1, fpiese);
-    }
-    fclose(fpiese);
-}
-
-void snap_top_left(char mat[7][7]) {
-    int rand_minim = 7, coloana_minima = 7;
-    for (int i = 1; i < 6; i++) {
-        for (int j = 1; j < 6; j++) {
-            if (mat[i][j] == 'q' || mat[i][j] == 'g') {
-                if (i < rand_minim) rand_minim = i;
-                if (j < coloana_minima) coloana_minima = j;
-            }
-        }
-    }
-    char matrice_temporara[7][7];
-    for (int i = 0; i < 7; i++) {
-        for (int j = 0; j < 7; j++) {
-            matrice_temporara[i][j] = '#';
-        }
-    }
-    for (int i = 1; i < 6; i++) {
-        for (int j = 1; j < 6; j++) {
-            if (mat[i][j] == 'q' || mat[i][j] == 'g') {
-                matrice_temporara[i - rand_minim + 1][j - coloana_minima + 1] = mat[i][j];
-            }
-        }
-    }
-    matrice_temporara[0][0] = mat[0][0];
-    matrice_temporara[0][6] = mat[0][6];
-    matrice_temporara[6][6] = mat[6][6];
-    matrice_temporara[6][0] = mat[6][0];
-    for (int i = 0; i < 7; i++) {
-        for (int j = 0; j < 7; j++) {
-            mat[i][j] = matrice_temporara[i][j];
-        }
-    }
-}
-
-void roteste(char m[7][7])
-{
-    for (int i = 0; i < 7; i++)
-    {
-        for (int j = i + 1; j < 7; j++)
-            swap(m[i][j], m[j][i]);
-    }
-
-    for (int i = 0; i < 7; i++)
-    {
-        for (int j = 0; j < 3; j++)
-        {
-            swap(m[i][j], m[i][7 - j - 1]);
-        }
-    }
-    snap_top_left(m);
-}
 void initializare_Nivel(char tarc[7][9])
 {
     char buffer;
@@ -163,45 +57,74 @@ select_nivel:
     fclose(ftarc);
 }
 
+void afisare_nivel(char tarc[7][9])
+{
+    for (int i = 0; i < 7; i++)
+    {
+        for (int j = 0; j < 9; j++)
+            cout << tarc[i][j] << " ";
+        cout << endl;
+    }
+}
+
+void afisare_piesa(char tarc[7][7])
+{
+    for (int i = 0; i < 7; i++)
+    {
+        for (int j = 0; j < 7; j++)
+            cout << tarc[i][j] << " ";
+        cout << endl;
+    }
+}
+
 int main()
 {
-    char tarc[7][9];
-    bool playing;
+    bool playing=1;
     initializare_Nivel(tarc);
     initializare_matrice_piese();
-    cout << endl;
-    for (int nr = 0; nr < 5; nr++)
+    while (playing)
     {
-        roteste(matrice_L);
-        for (int i = 0; i < 7; i++)
+        selectare_piesa:cout << "Selecteaza piesa:" << endl << "1.Piesa in forma de L" << endl << "2.Piesa dreapta lunga" << endl << "3.Piesa dreapta scurta" << endl;
+        switch (getch())
         {
-            for (int j = 0; j < 7; j++)
-                cout << matrice_L[i][j] << " ";
-            cout << endl;
+        case '1':
+            system("CLS");
+            afisare_nivel(tarc);
+            cout << "Ai selectat piesa in forma de L.Apasati orice tasta pentru a continua."<<endl;
+            copiere_matrice(matrice_L, piesa_curenta);
+            getch();
+            break;
+        case '2':
+            system("CLS");
+            afisare_nivel(tarc);
+            cout << "Ai selectat piesa dreapta lunga.Apasati orice tasta pentru a continua."<<endl;
+            copiere_matrice(matrice_gard_lung,piesa_curenta);
+            getch();
+            break;
+        case '3':
+            system("CLS");
+            afisare_nivel(tarc);
+            cout << "Ai selectat piesa dreapta scurta.Apasati orice tasta pentru a continua."<<endl;
+            copiere_matrice(matrice_gard_scurt,piesa_curenta);
+            getch();
+            break;
+        case 27: ///ASCII 32=tasta escape
+            playing = false;
+            break;
+        default:
+            cout << "Selectie invalida! Va rugam faceti o selectie valida."<<endl;
+            goto selectare_piesa;
+            break;
         }
-        cout << endl;
-    }
-    for (int nr = 0; nr < 5; nr++)
-    {
-        roteste(matrice_gard_lung);
-        for (int i = 0; i < 7; i++)
+        system("CLS");
+        afisare_nivel(tarc);
+        cout << "Actiuni posibile:" << endl << "-Rotire piesa:tasta 'r'" << endl << "-Mutare piesa:tastele sageti" << "-Reselectare piesa:tasta Backspace";
+        switch (getch())
         {
-            for (int j = 0; j < 7; j++)
-                cout << matrice_gard_lung[i][j] << " ";
-            cout << endl;
+            case :
+
         }
-        cout << endl;
-    }
-    for (int nr = 0; nr < 5; nr++)
-    {
-        roteste(matrice_gard_scurt);
-        for (int i = 0; i < 7; i++)
-        {
-            for (int j = 0; j < 7; j++)
-                cout << matrice_gard_scurt[i][j] << " ";
-            cout << endl;
-        }
-        cout << endl;
+
     }
 
     return 0;

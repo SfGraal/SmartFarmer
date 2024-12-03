@@ -130,6 +130,9 @@
   <ItemGroup>
     <ClCompile Include="Smart Farmer.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="unelte_piese.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
