@@ -1,0 +1,7 @@
+g g g g g g g g g 
+g o # # # # # p g 
+g # # # # # # # g 
+g # # c # p # # g 
+g # # # # # # # g 
+g o # # # # # c g 
+g g g g g g g g g 

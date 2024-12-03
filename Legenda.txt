@@ -1,0 +1,21 @@
+/*
+LEGENDA
+c-cai
+o-oi
+p-porci
+v-vaci
+g-gard
+q-colt/capat gard
+#-spatiu gol
+a-troaca
+
+nivel1+nivel2:dificultate start
+nivel3+nivel4:dificultate junior
+nivel5:dificultate master
+
+======
+CONDITII GARD
+g intalneste g = not ok
+orice alta combinatie = ok
+======
+*/
