@@ -1,5 +1,8 @@
 #pragma once
 #include <iostream>
+
+#include "utilitati.h"
+
 #pragma warning(disable : 4996)
 
 using namespace std;
@@ -7,6 +10,8 @@ using namespace std;
 char matrice_L[7][7];
 char matrice_gard_lung[7][7];
 char matrice_gard_scurt[7][7];
+char matrice_piesa_curenta[7][7];
+
 
 void initializare_matrice_piese()
 {
@@ -97,9 +102,140 @@ void roteste(char m[7][7])
     snap_top_left(m);
 }
 
-void copiere_matrice(char sursa[7][7], char destinatie[7][7])
+void copiere_matrice_piese(char sursa[7][7], char destinatie[7][7])
 {
     for (int i = 0; i < 7; i++)
         for (int j = 0; j < 7; j++)
             destinatie[i][j] = sursa[i][j];
+}
+
+void copiere_matrice_tarc(char sursa[7][9], char destinatie[7][9])
+{
+    for (int i = 0; i < 7; i++)
+        for (int j = 0; j < 9; j++)
+            destinatie[i][j] = sursa[i][j];
+}
+
+int plasare_piesa(int index_piesa_selectata) /// returneaza 1 = piesa plasata; returneaza 0 = piesa nu a fost plasata(adica trebuie selectata una noua); returneaza -1 = program incheiat
+{
+    char matrice_tarc_temporar[7][9];
+    int lungime_piesa, inaltime_piesa;
+    int x_offset=0, y_offset=0;
+    bool asezare_corecta = 1;
+
+    copiere_matrice_tarc(matrice_Tarc, matrice_tarc_temporar);
+
+    switch (index_piesa_selectata)
+    {
+    case 1:
+        lungime_piesa = 5;
+        inaltime_piesa = 3;
+        if (matrice_L[0][0] == 'v')
+            swap (lungime_piesa, inaltime_piesa);
+        break;
+    case 2:
+        lungime_piesa = 5;
+        inaltime_piesa = 1;
+        if (matrice_gard_lung[0][0] == 'v')
+            swap(lungime_piesa, inaltime_piesa);
+        break;
+    case 3:
+        lungime_piesa = 3;
+        inaltime_piesa = 1;
+        if (matrice_gard_scurt[0][0] == 'v')
+            swap(lungime_piesa, inaltime_piesa);
+        break;
+    }
+
+selectare_actiune:
+    asezare_corecta = 1;
+    copiere_matrice_tarc(matrice_Tarc, matrice_tarc_temporar);
+    for (int i = 1; i < inaltime_piesa + 1; i++)
+        for (int j = 1; j < lungime_piesa + 1; j++)
+        {
+            if (matrice_tarc_temporar[i + x_offset - 1][j + y_offset - 1] == 'g' && matrice_piesa_curenta[i][j] == 'g')
+                matrice_tarc_temporar[i + x_offset - 1][j + y_offset - 1] = 'X';
+            else if (matrice_tarc_temporar[i + x_offset - 1][j + y_offset - 1] == 'g' && matrice_piesa_curenta[i][j] == 'q')
+                matrice_tarc_temporar[i + x_offset - 1][j + y_offset - 1] = 'g';
+            else if (matrice_tarc_temporar[i + x_offset - 1][j + y_offset - 1] == 'g' && matrice_piesa_curenta[i][j] == '#')
+                matrice_tarc_temporar[i + x_offset - 1][j + y_offset - 1] = 'g';
+            else if (matrice_tarc_temporar[i + x_offset - 1][j + y_offset - 1] == '#')
+                matrice_tarc_temporar[i + x_offset - 1][j + y_offset - 1] = matrice_piesa_curenta[i][j];
+
+        }
+    system("CLS");
+    afisare_nivel(matrice_tarc_temporar);
+    cout << "Actiuni posibile:" << endl << "-Rotire piesa:tasta 'r'" << endl << "-Mutare piesa:tastele sageti" << endl << "-Reselectare piesa:tasta Backspace" << endl << "-Confirmare plasare:tasta Enter" << endl;
+    switch (getch())
+    {
+    case 'r':
+        roteste(matrice_piesa_curenta);
+        system("CLS");
+        copiere_matrice_tarc(matrice_Tarc, matrice_tarc_temporar);
+        for (int i = 1; i < inaltime_piesa + 1; i++)
+            for (int j = 1; j < lungime_piesa + 1; j++)
+            {
+                if (matrice_tarc_temporar[i + x_offset - 1][j + y_offset - 1] == 'g' && matrice_piesa_curenta[i][j] == 'g')
+                    matrice_tarc_temporar[i + x_offset - 1][j + y_offset - 1] = 'x';
+                else if (matrice_tarc_temporar[i + x_offset - 1][j + y_offset - 1] == 'g' && matrice_piesa_curenta[i][j] == 'q')
+                    matrice_tarc_temporar[i + x_offset - 1][j + y_offset - 1] = 'G';
+                else if (matrice_tarc_temporar[i + x_offset - 1][j + y_offset - 1] == 'g' && matrice_piesa_curenta[i][j] == '#')
+                    matrice_tarc_temporar[i + x_offset - 1][j + y_offset - 1] = 'G';
+                else if (matrice_tarc_temporar[i + x_offset - 1][j + y_offset - 1] == '#')
+                    matrice_tarc_temporar[i + x_offset - 1][j + y_offset - 1] = matrice_piesa_curenta[i][j];
+
+            }
+        swap(lungime_piesa, inaltime_piesa);
+        goto selectare_actiune;
+        break;
+    case 8:///backspace
+        system("CLS");
+        return 0;
+        break;
+    case 75:///left arrow 
+        if (y_offset >= 2)
+            y_offset -= 2;
+        goto selectare_actiune;
+        break;
+    case 72:///up arrow 
+        if (x_offset >= 2)
+            x_offset -= 2;
+        goto selectare_actiune;
+        break;
+    case 77:///right arrow 
+        if (y_offset + lungime_piesa - 1 <= 7)
+            y_offset += 2;
+        goto selectare_actiune;
+        break;
+    case 80:///down arrow 
+        if (x_offset + inaltime_piesa - 1 <= 5)
+            x_offset += 2;
+        goto selectare_actiune;
+        break;
+    case 27: ///ASCII 32=tasta escape
+        return -1;
+        break;
+    case 13: ///ASCII 13=tasta Enter
+        
+        for (int i = 0; i < 7; i++)
+            for (int j = 0; j < 9; j++)
+                if (matrice_tarc_temporar[i][j] == 'X')
+                    asezare_corecta = 0;
+        if (asezare_corecta == 1)
+        {
+            copiere_matrice_tarc(matrice_tarc_temporar, matrice_Tarc);
+            return 1;
+        }
+        else {
+            cout << "ASEZARE INCORECTA.Apasati orice tasta pentru a continua.";
+            getch();
+            goto selectare_actiune;
+        }
+        break;
+    default:
+        system("CLS");
+        afisare_nivel(matrice_Tarc);
+        goto selectare_actiune;
+        break;
+    }
 }

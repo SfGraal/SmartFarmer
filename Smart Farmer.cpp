@@ -2,110 +2,76 @@
 #include <conio.h>
 
 #include "unelte_piese.h"
+#include "utilitati.h"
 
 #pragma warning(disable : 4996)
 
 using namespace std;
 
-char tarc[7][9];
-char piesa_curenta[7][7];
-
-void initializare_Nivel(char tarc[7][9])
-{
-    char buffer;
-    FILE* ftarc;
-    int nivel;
-
-select_nivel:
-    cout << "selectaza nivelul: ";
-    cin >> nivel;
-    switch (nivel)
-    {
-    case 1:
-        ftarc = fopen("Nivele\\nivel1.txt", "r+");
-        break;
-    case 2:
-        ftarc = fopen("Nivele\\nivel2.txt", "r+");
-        break;
-    case 3:
-        ftarc = fopen("Nivele\\nivel3.txt", "r+");
-        break;
-    case 4:
-        ftarc = fopen("Nivele\\nivel4.txt", "r+");
-        break;
-    case 5:
-        ftarc = fopen("Nivele\\nivel5.txt", "r+");
-        break;
-    default:
-        cout << "nivel invalid\n";
-        goto select_nivel;
-        break;
-    }
-    system("CLS");
-
-    for (int i = 0; i < 7; i++)
-    {
-        for (int j = 0; j < 9; j++)
-        {
-            fread(&tarc[i][j], sizeof(char), 1, ftarc);
-            fread(&buffer, sizeof(char), 1, ftarc);
-            cout << tarc[i][j] << " ";
-        }
-        fread(&buffer, sizeof(char), 1, ftarc);
-        cout << endl;
-    }
-    fclose(ftarc);
-}
-
-void afisare_nivel(char tarc[7][9])
-{
-    for (int i = 0; i < 7; i++)
-    {
-        for (int j = 0; j < 9; j++)
-            cout << tarc[i][j] << " ";
-        cout << endl;
-    }
-}
-
-void afisare_piesa(char tarc[7][7])
-{
-    for (int i = 0; i < 7; i++)
-    {
-        for (int j = 0; j < 7; j++)
-            cout << tarc[i][j] << " ";
-        cout << endl;
-    }
-}
-
 int main()
 {
     bool playing=1;
-    initializare_Nivel(tarc);
+    int index_piesa_Selectata;
+    int piese_utilizate[3] = { 0 }, index_pozitie_curenta_piese_utilizate = 0;
+
+    initializare_Nivel(matrice_Tarc);
     initializare_matrice_piese();
+    afisare_nivel(matrice_Tarc);
     while (playing)
     {
         selectare_piesa:cout << "Selecteaza piesa:" << endl << "1.Piesa in forma de L" << endl << "2.Piesa dreapta lunga" << endl << "3.Piesa dreapta scurta" << endl;
         switch (getch())
         {
         case '1':
+            index_piesa_Selectata = 1;
+            for (int i=0;i<3;i++)
+                if (piese_utilizate[i] == index_piesa_Selectata)
+                {
+                    cout << "Piesa a fost deja utilizata.Apasati orice tasta pentru a continua.";
+                    getch();
+                    goto selectare_piesa;
+                }
+            piese_utilizate[index_pozitie_curenta_piese_utilizate] = index_piesa_Selectata;
+            index_pozitie_curenta_piese_utilizate++;
             system("CLS");
-            afisare_nivel(tarc);
+            afisare_nivel(matrice_Tarc);
             cout << "Ai selectat piesa in forma de L.Apasati orice tasta pentru a continua."<<endl;
-            copiere_matrice(matrice_L, piesa_curenta);
+            copiere_matrice_piese(matrice_L, matrice_piesa_curenta);
             getch();
             break;
         case '2':
+            index_piesa_Selectata = 2;
+            for (int i = 0; i < 3; i++)
+                if (piese_utilizate[i] == index_piesa_Selectata)
+                {
+                    cout << "Piesa a fost deja utilizata.Apasati orice tasta pentru a continua.";
+                    getch();
+                    goto selectare_piesa;
+                }
+            piese_utilizate[index_pozitie_curenta_piese_utilizate] = index_piesa_Selectata;
+            index_pozitie_curenta_piese_utilizate++;
             system("CLS");
-            afisare_nivel(tarc);
+            afisare_nivel(matrice_Tarc);
             cout << "Ai selectat piesa dreapta lunga.Apasati orice tasta pentru a continua."<<endl;
-            copiere_matrice(matrice_gard_lung,piesa_curenta);
+            copiere_matrice_piese(matrice_gard_lung,matrice_piesa_curenta);
             getch();
             break;
         case '3':
+            index_piesa_Selectata = 3;
+            for (int i = 0; i < 3; i++)
+                if (piese_utilizate[i] == index_piesa_Selectata)
+                {
+                    cout << "Piesa a fost deja utilizata.Apasati orice tasta pentru a continua.";
+                    getch();
+                    goto selectare_piesa;
+                }
+            piese_utilizate[index_pozitie_curenta_piese_utilizate] = index_piesa_Selectata;
+            index_pozitie_curenta_piese_utilizate++;
             system("CLS");
-            afisare_nivel(tarc);
+            afisare_nivel(matrice_Tarc);
             cout << "Ai selectat piesa dreapta scurta.Apasati orice tasta pentru a continua."<<endl;
-            copiere_matrice(matrice_gard_scurt,piesa_curenta);
+            copiere_matrice_piese(matrice_gard_scurt,matrice_piesa_curenta);
+            index_piesa_Selectata = 3;
             getch();
             break;
         case 27: ///ASCII 32=tasta escape
@@ -117,45 +83,14 @@ int main()
             break;
         }
         system("CLS");
-        afisare_nivel(tarc);
+        afisare_nivel(matrice_Tarc);
         if (playing)
         {
-
-        selectare_actiune:cout << "Actiuni posibile:" << endl << "-Rotire piesa:tasta 'r'" << endl << "-Mutare piesa:tastele sageti" << " -Reselectare piesa:tasta Backspace\n";
-        switch (getch())
-        {
-            case 'r':
-                roteste(piesa_curenta);
-                cout << "Aceasta este piesa dupa rotire:\n";
-                afisare_piesa(piesa_curenta);
-                getch();
-                goto selectare_actiune;
-                break;
-            case '\b':///backspace
-                goto selectare_piesa;
-                getch();
-                break;
-            case '37':///left arrow ?
-                getch();
-                break;
-            case '38':///up arrow ?
-                getch();
-                break;
-            case '39':///right arrow ?
-                getch();
-                break;
-            case '40':///down arrow ?
-                getch();
-                break;
-            case 27: ///ASCII 32=tasta escape
+            int cod_returnare = plasare_piesa(index_piesa_Selectata);
+            if (cod_returnare == -1)
                 playing = false;
-                break;
-            default:
-                system("CLS");
-                afisare_nivel(tarc);
-                goto selectare_actiune;
-                break;
-        }
+            else if (cod_returnare == 0)
+                goto selectare_piesa;
         }
         
 

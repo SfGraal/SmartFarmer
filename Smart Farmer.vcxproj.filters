@@ -23,5 +23,8 @@
     <ClInclude Include="unelte_piese.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="utilitati.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
