@@ -18,4 +18,6 @@ CONDITII GARD
 g intalneste g = not ok
 orice alta combinatie = ok
 ======
+nivel[0][0]='u' INSEAMNA NIVEL USOR/FARA TROACA
+nivel[0][0]='d' INSEAMNA NIVEL DIFICIL/CU TROACA
 */

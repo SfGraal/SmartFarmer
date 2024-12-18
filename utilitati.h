@@ -74,3 +74,27 @@ void afisare_piesa(char tarc[7][7])
         cout << endl;
     }
 }
+
+void fill_victorie(int i, int j,char matrice_temporara[7][9],char vector_animale[63], int& indice_vector_animale, int& contor_troaca)
+{
+    if (matrice_temporara[i][j] != '#')
+        if (matrice_temporara[i][j] == 'a')
+        {
+            contor_troaca++;
+            matrice_temporara[i][j] = 'X';
+        }
+        else {
+            vector_animale[indice_vector_animale] = matrice_temporara[i][j];
+            indice_vector_animale++;
+            matrice_temporara[i][j] = 'X';
+        }
+    else matrice_temporara[i][j] = 'X';
+    if (matrice_temporara[i][j - 1] != 'g' && matrice_temporara[i][j-1]!='q' && matrice_temporara[i][j-1]!='X')
+        fill_victorie(i,j-1,matrice_temporara,vector_animale,indice_vector_animale,contor_troaca);
+    if (matrice_temporara[i+1][j] != 'g' && matrice_temporara [i+1][j]!='q' && matrice_temporara[i+1][j]!='X')
+        fill_victorie(i+1, j, matrice_temporara, vector_animale, indice_vector_animale, contor_troaca);
+    if (matrice_temporara[i][j +1] != 'g' && matrice_temporara[i][j+1]!='q' && matrice_temporara[i][j+1]!='X')
+        fill_victorie(i, j + 1, matrice_temporara, vector_animale, indice_vector_animale, contor_troaca);
+    if (matrice_temporara[i-1][j] != 'g' && matrice_temporara[i-1][j]!='q' && matrice_temporara[i - 1][j] != 'X')
+        fill_victorie(i-1, j, matrice_temporara, vector_animale, indice_vector_animale, contor_troaca);
+}

@@ -11,7 +11,9 @@ char matrice_L[7][7];
 char matrice_gard_lung[7][7];
 char matrice_gard_scurt[7][7];
 char matrice_piesa_curenta[7][7];
-
+char stiva_table_de_joc[4][7][9];
+int index_tabla_curenta = 0;
+int piese_utilizate[3] = { 0 }, index_pozitie_curenta_piese_utilizate = 0;
 
 void initializare_matrice_piese()
 {
@@ -171,6 +173,11 @@ selectare_actiune:
     case 'r':
         roteste(matrice_piesa_curenta);
         system("CLS");
+        swap(lungime_piesa, inaltime_piesa);
+        if (x_offset + inaltime_piesa > 5)
+            x_offset -= 2;
+        if (y_offset + lungime_piesa > 7)
+            y_offset -= 2;
         copiere_matrice_tarc(matrice_Tarc, matrice_tarc_temporar);
         for (int i = 1; i < inaltime_piesa + 1; i++)
             for (int j = 1; j < lungime_piesa + 1; j++)
@@ -185,11 +192,13 @@ selectare_actiune:
                     matrice_tarc_temporar[i + x_offset - 1][j + y_offset - 1] = matrice_piesa_curenta[i][j];
 
             }
-        swap(lungime_piesa, inaltime_piesa);
         goto selectare_actiune;
         break;
     case 8:///backspace
         system("CLS");
+        index_pozitie_curenta_piese_utilizate--;
+        piese_utilizate[index_pozitie_curenta_piese_utilizate] = 0;
+        
         return 0;
         break;
     case 75:///left arrow 
@@ -223,7 +232,9 @@ selectare_actiune:
                     asezare_corecta = 0;
         if (asezare_corecta == 1)
         {
+            index_tabla_curenta++;
             copiere_matrice_tarc(matrice_tarc_temporar, matrice_Tarc);
+            copiere_matrice_tarc(matrice_Tarc, stiva_table_de_joc[index_tabla_curenta]);
             return 1;
         }
         else {
@@ -238,4 +249,29 @@ selectare_actiune:
         goto selectare_actiune;
         break;
     }
+}
+
+bool verificare_victorie()
+{
+    char matrice_temporara[7][9];
+    char vector_animale[63] = { '1' };
+    int indice_vector_animale = 0;
+    int contor_troaca = 0;
+    copiere_matrice_tarc(matrice_Tarc, matrice_temporara);
+    for (int i = 1; i < 6; i++)
+        for (int j = 1; j < 8; j++)
+            if (matrice_temporara[i][j] != 'g' && matrice_temporara[i][j] != 'q' && matrice_temporara[i][j] != 'X')
+            {
+                fill_victorie(i, j, matrice_temporara, vector_animale, indice_vector_animale, contor_troaca);
+                for (int k = 1; k < indice_vector_animale; k++)
+                    if (vector_animale[k] != vector_animale[0])
+                        return 0;
+                if (matrice_temporara[0][0] == 'd' && contor_troaca == 0)
+                    return 0;
+                for (int k = 0; k < 63; k++)
+                    vector_animale[k] = '1';
+                indice_vector_animale = 0;
+                contor_troaca = 0;
+            }
+    return 1;
 }
