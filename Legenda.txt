@@ -20,4 +20,6 @@ orice alta combinatie = ok
 ======
 nivel[0][0]='u' INSEAMNA NIVEL USOR/FARA TROACA
 nivel[0][0]='d' INSEAMNA NIVEL DIFICIL/CU TROACA
+======
+animalele pot sta doar pe pozitii impare iar gardurile doar pe pozitii pare
 */
