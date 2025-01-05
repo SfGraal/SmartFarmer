@@ -42,15 +42,16 @@ regenerare_nivel:
             goto _inceput_joc;
             break;
     }
-
-    
+    for (int i = 0; i < 4; i++)
+        copiere_matrice_tarc(matrice_Tarc, stiva_table_de_joc[i]);
 
     system("CLS");
 
     afisare_nivel(matrice_Tarc);
+
     while (playing)
     {
-        cout << "Selecteaza o actiune:" << endl << "-Plasare piesa:tasta p" << endl << "-Undo miscare:tasta u"<<endl;
+selectare_actiune:cout << "Selecteaza o actiune:" << endl << "-Plasare piesa:tasta p" << endl << "-Undo miscare:tasta u"<<endl << "-Rezolvare automata a nivelului:tasta 'a'(ATENTIE!Pentru a folosi rezolvarea automata, tabla trebuie sa fie goala)"<<endl;
         switch (getch())
         {
         case 'p':
@@ -161,17 +162,41 @@ selectare_piesa:system("CLS");
             }
             break;
         case 'a':
-            if (rezolvare_automata() == 1)
+            if (index_tabla_curenta >= 1)
             {
                 system("CLS");
                 afisare_nivel(matrice_Tarc);
-                cout << endl << "Aceasta este o solutie posibila.";
-                playing = 0;
+                cout << "Tabla NU este goala.Goliti tabla apoi reincercati sa utilizati rezolvarea automata."<<endl;
+                goto selectare_actiune;
+            }
+            if (rezolvare_automata() == 1)
+            {
+_selectare_optiune:
+                system("CLS");
+                afisare_nivel(matrice_Tarc);
+                cout << endl << "Aceasta este o solutie posibila.Pentru a rejuca, apasati tasta ENTER.Pentru a iesi, apasati tasta ESC.";
+                switch (getch())
+                {
+                case 27:
+                    playing = 0;
+                case 13:
+                    goto _inceput_joc;
+                default:
+                    goto _selectare_optiune;
+                }
             }
             else
             {
-                cout << "Nivelul NU are solutii!";
-                playing = false;
+                cout << "Nivelul NU are solutii!Pentru a rejuca, apasati tasta ENTER.Pentru a iesi, apasati tasta ESC.";
+                switch (getch())
+                {
+                case 27:
+                    playing = 0;
+                case 13:
+                    goto _inceput_joc;
+                default:
+                    goto _selectare_optiune;
+                }
             }
             break;
 

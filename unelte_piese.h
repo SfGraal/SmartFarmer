@@ -71,13 +71,17 @@ void snap_top_left(char mat[9][9]) {
     for (int i = 1; i < 8; i++) {
         for (int j = 1; j < 8; j++) {
             if (mat[i][j] == 'q' || mat[i][j] == 'g') {
-                matrice_temporara[i - rand_minim + 1][j - coloana_minima + 1] = mat[i][j];
+                int new_i = i - rand_minim + 1;
+                int new_j = j - coloana_minima + 1;
+                if (new_i >= 0 && new_i < 8 && new_j >= 0 && new_j < 8) {
+                    matrice_temporara[new_i][new_j] = mat[i][j];
+                }
             }
         }
     }
     matrice_temporara[0][0] = mat[0][0];
     matrice_temporara[0][8] = mat[0][8];
-    matrice_temporara[7][7] = mat[7][7];
+    matrice_temporara[8][8] = mat[8][8];
     matrice_temporara[7][0] = mat[7][0];
     for (int i = 0; i < 9; i++) {
         for (int j = 0; j < 9; j++) {
@@ -86,19 +90,22 @@ void snap_top_left(char mat[9][9]) {
     }
 }
 
+
+
 void roteste(char m[9][9])
 {
     for (int i = 0; i < 9; i++)
     {
         for (int j = i + 1; j < 9; j++)
-            swap(m[i][j], m[j][i]);
+        {
+            std::swap(m[i][j], m[j][i]);
+        }
     }
-
     for (int i = 0; i < 9; i++)
     {
         for (int j = 0; j < 4; j++)
         {
-            swap(m[i][j], m[i][9 - j - 1]);
+            std::swap(m[i][j], m[i][9 - j - 1]);
         }
     }
     snap_top_left(m);
@@ -133,19 +140,19 @@ int plasare_piesa(int index_piesa_selectata) /// returneaza 1 = piesa plasata; r
         lungime_piesa = 5;
         inaltime_piesa = 3;
         if (matrice_L[0][0] == 'v')
-            swap (lungime_piesa, inaltime_piesa);
+            intSwap (lungime_piesa, inaltime_piesa);
         break;
     case 2:
         lungime_piesa = 7;
         inaltime_piesa = 1;
         if (matrice_gard_lung[0][0] == 'v')
-            swap(lungime_piesa, inaltime_piesa);
+            intSwap(lungime_piesa, inaltime_piesa);
         break;
     case 3:
         lungime_piesa = 5;
         inaltime_piesa = 1;
         if (matrice_gard_scurt[0][0] == 'v')
-            swap(lungime_piesa, inaltime_piesa);
+            intSwap(lungime_piesa, inaltime_piesa);
         break;
     }
 
@@ -167,16 +174,16 @@ selectare_actiune:
         }
     system("CLS");
     afisare_nivel(matrice_tarc_temporar);
-    cout << "Actiuni posibile:" << endl << "-Rotire piesa:tasta 'r'" << endl << "-Mutare piesa:tastele sageti" << endl << "-Reselectare piesa:tasta Backspace" << endl << "-Confirmare plasare:tasta Enter" << endl;
+    cout << "Actiuni posibile:" << endl << "-Rotire piesa:tasta 'r'" << endl << "-Mutare piesa:tastele sageti" << endl << "-Reselectare piesa:tasta Backspace" << endl << "-Confirmare plasare:tasta Enter" << endl ;
     switch (getch())
     {
     case 'r':
         roteste(matrice_piesa_curenta);
         system("CLS");
-        swap(lungime_piesa, inaltime_piesa);
-        if (x_offset + inaltime_piesa > 5)
+        intSwap(lungime_piesa, inaltime_piesa);
+        while (x_offset + inaltime_piesa > 7)
             x_offset -= 2;
-        if (y_offset + lungime_piesa > 7)
+        while (y_offset + lungime_piesa > 9)
             y_offset -= 2;
         copiere_matrice_tarc(matrice_Tarc, matrice_tarc_temporar);
         for (int i = 1; i < inaltime_piesa + 1; i++)
@@ -257,6 +264,7 @@ bool verificare_victorie()
     char vector_animale[63] = { 'X' };
     int indice_vector_animale = 0;
     int contor_troaca = 0;
+    int contor_animale_curente = 0;
     copiere_matrice_tarc(matrice_Tarc, matrice_temporara);
     for (int i = 1; i < 6; i++)
         for (int j = 1; j < 8; j++)
@@ -266,10 +274,17 @@ bool verificare_victorie()
                 for (int k = 1; k < indice_vector_animale; k++)
                     if (vector_animale[k] != vector_animale[0])
                         return 0;
+                for (int i = 1; i < 6; i++)
+                    for (int j = 1; j < 8; j++)
+                        if (matrice_Tarc[i][j] == vector_animale[0])
+                            contor_animale_curente++;
+                if (contor_animale_curente != indice_vector_animale)
+                    return 0;
                 if (matrice_temporara[0][0] == 'd' && contor_troaca == 0)
                     return 0;
                 for (int k = 0; k < 63; k++)
                     vector_animale[k] = '1';
+                contor_animale_curente = 0;
                 indice_vector_animale = 0;
                 contor_troaca = 0;
             }
@@ -279,6 +294,8 @@ bool verificare_victorie()
 bool rezolvare_automata()
 {
     ///piesa1 = piesa L ; piesa2 = piesa lunga ; piesa3 = piesa scurta
+    for (int i = 0; i < 4; i++)
+        copiere_matrice_tarc(stiva_table_de_joc[0], stiva_table_de_joc[i]);
     system("CLS");
     int x_offset1 = 0, x_offset2 = 0, x_offset3 = 0;
     int y_offset1 = 0, y_offset2 = 0, y_offset3 = 0;
@@ -291,6 +308,7 @@ bool rezolvare_automata()
     bool asezare_corecta3 = 1;
     int rotiri1 = 0, rotiri2 = 0, rotiri3 = 0;
     copiere_matrice_tarc(matrice_Tarc, stiva_table_de_joc[0]);
+    ///prima piesa asezata e L,apoi se incearca ordinea lunga->scurta, apoi se incearca ordinea scurta->lunga
     while (rotiri1 <= 3)
     {
         for (x_offset1 = 0; x_offset1 + inaltime_piesa1 - 1 <= 6; x_offset1 += 2)
@@ -388,7 +406,7 @@ bool rezolvare_automata()
 
                                             }
                                         roteste(matrice_gard_scurt);
-                                        swap(lungime_piesa3, inaltime_piesa3);
+                                        intSwap(lungime_piesa3, inaltime_piesa3);
                                         rotiri3++;
                                     }
                                     if (verificare_victorie() == 1)
@@ -399,8 +417,90 @@ bool rezolvare_automata()
 
                             }
                         roteste(matrice_gard_lung);
-                        swap(lungime_piesa2, inaltime_piesa2);
+                        intSwap(lungime_piesa2, inaltime_piesa2);
                         rotiri2++;
+                    }
+                    rotiri3 = 0;
+                    while (rotiri3 <= 1)
+                    {
+                        for (x_offset3 = 0; x_offset3 + inaltime_piesa3 - 1 <= 6; x_offset3 += 2)
+                            for (y_offset3 = 0; y_offset3 + lungime_piesa3 - 1 <= 8; y_offset3 += 2)
+                            {
+                                asezare_corecta3 = 1;
+                                copiere_matrice_tarc(matrice_Tarc, matrice_tarc_temporar);
+                                for (int i = 1; i < inaltime_piesa3 + 1; i++)
+                                    for (int j = 1; j < lungime_piesa3 + 1; j++)
+                                    {
+                                        if (matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] == 'g' && matrice_gard_scurt[i][j] == 'g')
+                                            matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] = 'X';
+                                        else if (matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] == 'g' && matrice_gard_scurt[i][j] == 'q')
+                                            matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] = 'g';
+                                        else if (matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] == 'g' && matrice_gard_scurt[i][j] == '#')
+                                            matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] = 'g';
+                                        else if (matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] == '#')
+                                            matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] = matrice_gard_scurt[i][j];
+                                    }
+                                for (int i = 0; i < 7; i++)
+                                    for (int j = 0; j < 9; j++)
+                                        if (matrice_tarc_temporar[i][j] == 'X')
+                                            asezare_corecta3 = 0;
+                                if (asezare_corecta3 == 1)
+                                {
+                                    index_tabla_curenta++;
+                                    copiere_matrice_tarc(matrice_tarc_temporar, matrice_Tarc);
+                                    copiere_matrice_tarc(matrice_Tarc, stiva_table_de_joc[2]);
+                                    if (verificare_victorie() == 1)
+                                        return 1;
+                                    rotiri2 = 0;
+                                    while (rotiri2 <= 1)
+                                    {
+                                        for (x_offset2 = 0; x_offset2 + inaltime_piesa2 - 1 <= 6; x_offset2 += 2)
+                                            for (y_offset2 = 0; y_offset2 + lungime_piesa2 - 1 <= 8; y_offset2 += 2)
+                                            {
+                                                asezare_corecta2 = 1;
+                                                copiere_matrice_tarc(matrice_Tarc, matrice_tarc_temporar);
+                                                for (int i = 1; i < inaltime_piesa2 + 1; i++)
+                                                    for (int j = 1; j < lungime_piesa2 + 1; j++)
+                                                    {
+                                                        if (matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] == 'g' && matrice_gard_lung[i][j] == 'g')
+                                                            matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] = 'X';
+                                                        else if (matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] == 'g' && matrice_gard_lung[i][j] == 'q')
+                                                            matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] = 'g';
+                                                        else if (matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] == 'g' && matrice_gard_lung[i][j] == '#')
+                                                            matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] = 'g';
+                                                        else if (matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] == '#')
+                                                            matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] = matrice_gard_lung[i][j];
+                                                    }
+                                                for (int i = 0; i < 7; i++)
+                                                    for (int j = 0; j < 9; j++)
+                                                        if (matrice_tarc_temporar[i][j] == 'X')
+                                                            asezare_corecta2 = 0;
+
+                                                if (asezare_corecta2 == 1)
+                                                {
+                                                    copiere_matrice_tarc(matrice_tarc_temporar, matrice_Tarc);
+                                                    copiere_matrice_tarc(matrice_Tarc, stiva_table_de_joc[3]);
+                                                    if (verificare_victorie() == 1)
+                                                        return 1;
+                                                }
+                                                else continue;
+                                                copiere_matrice_tarc(stiva_table_de_joc[2], matrice_Tarc);
+
+                                            }
+                                        roteste(matrice_gard_lung);
+                                        intSwap(lungime_piesa2, inaltime_piesa2);
+                                        rotiri2++;
+                                    }
+                                    if (verificare_victorie() == 1)
+                                        return 1;
+                                }
+                                else continue;
+                                copiere_matrice_tarc(stiva_table_de_joc[1], matrice_Tarc);
+
+                            }
+                        roteste(matrice_gard_scurt);
+                        intSwap(lungime_piesa3, inaltime_piesa3);
+                        rotiri3++;
                     }
                     if (verificare_victorie() == 1)
                         return 1;
@@ -410,8 +510,424 @@ bool rezolvare_automata()
 
             }
         roteste(matrice_L);
-        swap(lungime_piesa1, inaltime_piesa1);
+        intSwap(lungime_piesa1, inaltime_piesa1);
         rotiri1++;
+    }
+    rotiri1 = rotiri2 = rotiri3 = 0;
+    x_offset1 = x_offset2 = x_offset3 = 0;
+    y_offset1 = y_offset2 = y_offset3 = 0;
+    ///prima piesa asezata e cea lunga, apoi se incearca ordinea L->scurta , apoi scurta->L
+    while (rotiri2 <= 1)
+    {
+        for (x_offset2 = 0; x_offset2 + inaltime_piesa2 - 1 <= 6; x_offset2 += 2)
+            for (y_offset2 = 0; y_offset2+ lungime_piesa2 - 1 <= 8; y_offset2 += 2)
+            {
+                asezare_corecta2 = 1;
+                copiere_matrice_tarc(matrice_Tarc, matrice_tarc_temporar);
+                for (int i = 1; i < inaltime_piesa2 + 1; i++)
+                    for (int j = 1; j < lungime_piesa2 + 1; j++)
+                    {
+                        if (matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] == 'g' && matrice_gard_lung[i][j] == 'g')
+                            matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] = 'X';
+                        else if (matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] == 'g' && matrice_gard_lung[i][j] == 'q')
+                            matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] = 'g';
+                        else if (matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] == 'g' && matrice_gard_lung[i][j] == '#')
+                            matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] = 'g';
+                        else if (matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] == '#')
+                            matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] = matrice_gard_lung[i][j];
+                    }
+                for (int i = 0; i < 7; i++)
+                    for (int j = 0; j < 9; j++)
+                        if (matrice_tarc_temporar[i][j] == 'X')
+                            asezare_corecta2 = 0;
+                if (asezare_corecta2 == 1)
+                {
+                    copiere_matrice_tarc(matrice_tarc_temporar, matrice_Tarc);
+                    copiere_matrice_tarc(matrice_Tarc, stiva_table_de_joc[1]);
+                    if (verificare_victorie() == 1)
+                        return 1;
+                    rotiri1 = 0;
+                    while (rotiri1 <= 3)
+                    {
+                        for (x_offset1 = 0; x_offset1 + inaltime_piesa1 - 1 <= 6; x_offset1 += 2)
+                            for (y_offset1 = 0; y_offset1 + lungime_piesa1 - 1 <= 8; y_offset1 += 2)
+                            {
+                                asezare_corecta1 = 1;
+                                copiere_matrice_tarc(matrice_Tarc, matrice_tarc_temporar);
+                                for (int i = 1; i < inaltime_piesa1 + 1; i++)
+                                    for (int j = 1; j < lungime_piesa1 + 1; j++)
+                                    {
+                                        if (matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] == 'g' && matrice_L[i][j] == 'g')
+                                            matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] = 'X';
+                                        else if (matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] == 'g' && matrice_L[i][j] == 'q')
+                                            matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] = 'g';
+                                        else if (matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] == 'g' && matrice_L[i][j] == '#')
+                                            matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] = 'g';
+                                        else if (matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] == '#')
+                                            matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] = matrice_L[i][j];
+                                    }
+                                for (int i = 0; i < 7; i++)
+                                    for (int j = 0; j < 9; j++)
+                                        if (matrice_tarc_temporar[i][j] == 'X')
+                                            asezare_corecta1 = 0;
+                                if (asezare_corecta1 == 1)
+                                {
+                                    index_tabla_curenta++;
+                                    copiere_matrice_tarc(matrice_tarc_temporar, matrice_Tarc);
+                                    copiere_matrice_tarc(matrice_Tarc, stiva_table_de_joc[2]);
+                                    if (verificare_victorie() == 1)
+                                        return 1;
+                                    rotiri3 = 0;
+                                    while (rotiri3 <= 1)
+                                    {
+                                        for (x_offset3 = 0; x_offset3 + inaltime_piesa3 - 1 <= 6; x_offset3 += 2)
+                                            for (y_offset3 = 0; y_offset3 + lungime_piesa3 - 1 <= 8; y_offset3 += 2)
+                                            {
+                                                asezare_corecta3 = 1;
+                                                copiere_matrice_tarc(matrice_Tarc, matrice_tarc_temporar);
+                                                for (int i = 1; i < inaltime_piesa3 + 1; i++)
+                                                    for (int j = 1; j < lungime_piesa3 + 1; j++)
+                                                    {
+                                                        if (matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] == 'g' && matrice_gard_scurt[i][j] == 'g')
+                                                            matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] = 'X';
+                                                        else if (matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] == 'g' && matrice_gard_scurt[i][j] == 'q')
+                                                            matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] = 'g';
+                                                        else if (matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] == 'g' && matrice_gard_scurt[i][j] == '#')
+                                                            matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] = 'g';
+                                                        else if (matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] == '#')
+                                                            matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] = matrice_gard_scurt[i][j];
+                                                    }
+                                                for (int i = 0; i < 7; i++)
+                                                    for (int j = 0; j < 9; j++)
+                                                        if (matrice_tarc_temporar[i][j] == 'X')
+                                                            asezare_corecta3 = 0;
+
+                                                if (asezare_corecta3 == 1)
+                                                {
+                                                    copiere_matrice_tarc(matrice_tarc_temporar, matrice_Tarc);
+                                                    copiere_matrice_tarc(matrice_Tarc, stiva_table_de_joc[3]);
+                                                    if (verificare_victorie() == 1)
+                                                        return 1;
+                                                }
+                                                else continue;
+                                                copiere_matrice_tarc(stiva_table_de_joc[2], matrice_Tarc);
+
+                                            }
+                                        roteste(matrice_gard_scurt);
+                                        intSwap(lungime_piesa3, inaltime_piesa3);
+                                        rotiri3++;
+                                    }
+                                    if (verificare_victorie() == 1)
+                                        return 1;
+                                }
+                                else continue;
+                                copiere_matrice_tarc(stiva_table_de_joc[1], matrice_Tarc);
+
+                            }
+                        roteste(matrice_L);
+                        intSwap(lungime_piesa1, inaltime_piesa1);
+                        rotiri1++;
+                    }
+                    rotiri3 = 0;
+                    while (rotiri3 <= 1)
+                    {
+                        for (x_offset3 = 0; x_offset3 + inaltime_piesa3 - 1 <= 6; x_offset3 += 2)
+                            for (y_offset3 = 0; y_offset3 + lungime_piesa3 - 1 <= 8; y_offset3 += 2)
+                            {
+                                asezare_corecta3 = 1;
+                                copiere_matrice_tarc(matrice_Tarc, matrice_tarc_temporar);
+                                for (int i = 1; i < inaltime_piesa3 + 1; i++)
+                                    for (int j = 1; j < lungime_piesa3 + 1; j++)
+                                    {
+                                        if (matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] == 'g' && matrice_gard_scurt[i][j] == 'g')
+                                            matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] = 'X';
+                                        else if (matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] == 'g' && matrice_gard_scurt[i][j] == 'q')
+                                            matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] = 'g';
+                                        else if (matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] == 'g' && matrice_gard_scurt[i][j] == '#')
+                                            matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] = 'g';
+                                        else if (matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] == '#')
+                                            matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] = matrice_gard_scurt[i][j];
+                                    }
+                                for (int i = 0; i < 7; i++)
+                                    for (int j = 0; j < 9; j++)
+                                        if (matrice_tarc_temporar[i][j] == 'X')
+                                            asezare_corecta3 = 0;
+                                if (asezare_corecta3 == 1)
+                                {
+                                    index_tabla_curenta++;
+                                    copiere_matrice_tarc(matrice_tarc_temporar, matrice_Tarc);
+                                    copiere_matrice_tarc(matrice_Tarc, stiva_table_de_joc[2]);
+                                    if (verificare_victorie() == 1)
+                                        return 1;
+                                    rotiri1 = 0;
+                                    while (rotiri1 <= 3)
+                                    {
+                                        for (x_offset1 = 0; x_offset1 + inaltime_piesa1 - 1 <= 6; x_offset1 += 2)
+                                            for (y_offset1 = 0; y_offset1 + lungime_piesa1 - 1 <= 8; y_offset1 += 2)
+                                            {
+                                                asezare_corecta1 = 1;
+                                                copiere_matrice_tarc(matrice_Tarc, matrice_tarc_temporar);
+                                                for (int i = 1; i < inaltime_piesa1 + 1; i++)
+                                                    for (int j = 1; j < lungime_piesa1 + 1; j++)
+                                                    {
+                                                        if (matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] == 'g' && matrice_L[i][j] == 'g')
+                                                            matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] = 'X';
+                                                        else if (matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] == 'g' && matrice_L[i][j] == 'q')
+                                                            matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] = 'g';
+                                                        else if (matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] == 'g' && matrice_L[i][j] == '#')
+                                                            matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] = 'g';
+                                                        else if (matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] == '#')
+                                                            matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] = matrice_L[i][j];
+                                                    }
+                                                for (int i = 0; i < 7; i++)
+                                                    for (int j = 0; j < 9; j++)
+                                                        if (matrice_tarc_temporar[i][j] == 'X')
+                                                            asezare_corecta1 = 0;
+
+                                                if (asezare_corecta1 == 1)
+                                                {
+                                                    copiere_matrice_tarc(matrice_tarc_temporar, matrice_Tarc);
+                                                    copiere_matrice_tarc(matrice_Tarc, stiva_table_de_joc[3]);
+                                                    if (verificare_victorie() == 1)
+                                                        return 1;
+                                                }
+                                                else continue;
+                                                copiere_matrice_tarc(stiva_table_de_joc[2], matrice_Tarc);
+
+                                            }
+                                        roteste(matrice_L);
+                                        intSwap(lungime_piesa1, inaltime_piesa1);
+                                        rotiri1++;
+                                    }
+                                    if (verificare_victorie() == 1)
+                                        return 1;
+                                }
+                                else continue;
+                                copiere_matrice_tarc(stiva_table_de_joc[1], matrice_Tarc);
+
+                            }
+                        roteste(matrice_gard_scurt);
+                        intSwap(lungime_piesa3, inaltime_piesa3);
+                        rotiri3++;
+                    }
+                    if (verificare_victorie() == 1)
+                        return 1;
+                }
+                else continue;
+                copiere_matrice_tarc(stiva_table_de_joc[0], matrice_Tarc);
+
+            }
+        roteste(matrice_gard_lung);
+        intSwap(lungime_piesa2, inaltime_piesa2);
+        rotiri2++;
+    }
+    rotiri1 = rotiri2 = rotiri3 = 0;
+    x_offset1 = x_offset2 = x_offset3 = 0;
+    y_offset1 = y_offset2 = y_offset3 = 0;
+    ///prima piesa asezata e cea scurta, apoi se incearca ordinea L->lunga , apoi lunga->L
+    while (rotiri3 <= 3)
+    {
+        for (x_offset3 = 0; x_offset3 + inaltime_piesa3 - 1 <= 6; x_offset3 += 2)
+            for (y_offset3 = 0; y_offset3 + lungime_piesa3 - 1 <= 8; y_offset3 += 2)
+            {
+                asezare_corecta3 = 1;
+                copiere_matrice_tarc(matrice_Tarc, matrice_tarc_temporar);
+                for (int i = 1; i < inaltime_piesa3 + 1; i++)
+                    for (int j = 1; j < lungime_piesa3 + 1; j++)
+                    {
+                        if (matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] == 'g' && matrice_gard_scurt[i][j] == 'g')
+                            matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] = 'X';
+                        else if (matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] == 'g' && matrice_gard_scurt[i][j] == 'q')
+                            matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] = 'g';
+                        else if (matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] == 'g' && matrice_gard_scurt[i][j] == '#')
+                            matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] = 'g';
+                        else if (matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] == '#')
+                            matrice_tarc_temporar[i + x_offset3 - 1][j + y_offset3 - 1] = matrice_gard_scurt[i][j];
+                    }
+                for (int i = 0; i < 7; i++)
+                    for (int j = 0; j < 9; j++)
+                        if (matrice_tarc_temporar[i][j] == 'X')
+                            asezare_corecta3 = 0;
+                if (asezare_corecta3 == 1)
+                {
+                    copiere_matrice_tarc(matrice_tarc_temporar, matrice_Tarc);
+                    copiere_matrice_tarc(matrice_Tarc, stiva_table_de_joc[1]);
+                    if (verificare_victorie() == 1)
+                        return 1;
+                    rotiri1 = 0;
+                    while (rotiri1 <= 3)
+                    {
+                        for (x_offset1 = 0; x_offset1 + inaltime_piesa1 - 1 <= 6; x_offset1 += 2)
+                            for (y_offset1 = 0; y_offset1 + lungime_piesa1 - 1 <= 8; y_offset1 += 2)
+                            {
+                                asezare_corecta1 = 1;
+                                copiere_matrice_tarc(matrice_Tarc, matrice_tarc_temporar);
+                                for (int i = 1; i < inaltime_piesa1 + 1; i++)
+                                    for (int j = 1; j < lungime_piesa1 + 1; j++)
+                                    {
+                                        if (matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] == 'g' && matrice_L[i][j] == 'g')
+                                            matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] = 'X';
+                                        else if (matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] == 'g' && matrice_L[i][j] == 'q')
+                                            matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] = 'g';
+                                        else if (matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] == 'g' && matrice_L[i][j] == '#')
+                                            matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] = 'g';
+                                        else if (matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] == '#')
+                                            matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] = matrice_L[i][j];
+                                    }
+                                for (int i = 0; i < 7; i++)
+                                    for (int j = 0; j < 9; j++)
+                                        if (matrice_tarc_temporar[i][j] == 'X')
+                                            asezare_corecta1 = 0;
+                                if (asezare_corecta1 == 1)
+                                {
+                                    index_tabla_curenta++;
+                                    copiere_matrice_tarc(matrice_tarc_temporar, matrice_Tarc);
+                                    copiere_matrice_tarc(matrice_Tarc, stiva_table_de_joc[2]);
+                                    if (verificare_victorie() == 1)
+                                        return 1;
+                                    rotiri2 = 0;
+                                    while (rotiri2 <= 1)
+                                    {
+                                        for (x_offset2 = 0; x_offset2 + inaltime_piesa2 - 1 <= 6; x_offset2 += 2)
+                                            for (y_offset2 = 0; y_offset2 + lungime_piesa2 - 1 <= 8; y_offset2 += 2)
+                                            {
+                                                asezare_corecta2 = 1;
+                                                copiere_matrice_tarc(matrice_Tarc, matrice_tarc_temporar);
+                                                for (int i = 1; i < inaltime_piesa2 + 1; i++)
+                                                    for (int j = 1; j < lungime_piesa2 + 1; j++)
+                                                    {
+                                                        if (matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] == 'g' && matrice_gard_lung[i][j] == 'g')
+                                                            matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] = 'X';
+                                                        else if (matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] == 'g' && matrice_gard_lung[i][j] == 'q')
+                                                            matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] = 'g';
+                                                        else if (matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] == 'g' && matrice_gard_lung[i][j] == '#')
+                                                            matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] = 'g';
+                                                        else if (matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] == '#')
+                                                            matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] = matrice_gard_lung[i][j];
+                                                    }
+                                                for (int i = 0; i < 7; i++)
+                                                    for (int j = 0; j < 9; j++)
+                                                        if (matrice_tarc_temporar[i][j] == 'X')
+                                                            asezare_corecta2 = 0;
+
+                                                if (asezare_corecta2 == 1)
+                                                {
+                                                    copiere_matrice_tarc(matrice_tarc_temporar, matrice_Tarc);
+                                                    copiere_matrice_tarc(matrice_Tarc, stiva_table_de_joc[3]);
+                                                    if (verificare_victorie() == 1)
+                                                        return 1;
+                                                }
+                                                else continue;
+                                                copiere_matrice_tarc(stiva_table_de_joc[2], matrice_Tarc);
+
+                                            }
+                                        roteste(matrice_gard_lung);
+                                        intSwap(lungime_piesa2, inaltime_piesa2);
+                                        rotiri2++;
+                                    }
+                                    if (verificare_victorie() == 1)
+                                        return 1;
+                                }
+                                else continue;
+                                copiere_matrice_tarc(stiva_table_de_joc[1], matrice_Tarc);
+
+                            }
+                        roteste(matrice_L);
+                        intSwap(lungime_piesa1, inaltime_piesa1);
+                        rotiri1++;
+                    }
+                    rotiri2 = 0;
+                    while (rotiri2 <= 1)
+                    {
+                        for (x_offset2 = 0; x_offset2 + inaltime_piesa2 - 1 <= 6; x_offset2 += 2)
+                            for (y_offset2 = 0; y_offset2 + lungime_piesa2 - 1 <= 8; y_offset2 += 2)
+                            {
+                                asezare_corecta2 = 1;
+                                copiere_matrice_tarc(matrice_Tarc, matrice_tarc_temporar);
+                                for (int i = 1; i < inaltime_piesa2 + 1; i++)
+                                    for (int j = 1; j < lungime_piesa2 + 1; j++)
+                                    {
+                                        if (matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] == 'g' && matrice_gard_lung[i][j] == 'g')
+                                            matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] = 'X';
+                                        else if (matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] == 'g' && matrice_gard_lung[i][j] == 'q')
+                                            matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] = 'g';
+                                        else if (matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] == 'g' && matrice_gard_lung[i][j] == '#')
+                                            matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] = 'g';
+                                        else if (matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] == '#')
+                                            matrice_tarc_temporar[i + x_offset2 - 1][j + y_offset2 - 1] = matrice_gard_lung[i][j];
+                                    }
+                                for (int i = 0; i < 7; i++)
+                                    for (int j = 0; j < 9; j++)
+                                        if (matrice_tarc_temporar[i][j] == 'X')
+                                            asezare_corecta2 = 0;
+                                if (asezare_corecta2 == 1)
+                                {
+                                    index_tabla_curenta++;
+                                    copiere_matrice_tarc(matrice_tarc_temporar, matrice_Tarc);
+                                    copiere_matrice_tarc(matrice_Tarc, stiva_table_de_joc[2]);
+                                    if (verificare_victorie() == 1)
+                                        return 1;
+                                    rotiri1 = 0;
+                                    while (rotiri1 <= 3)
+                                    {
+                                        for (x_offset1 = 0; x_offset1 + inaltime_piesa1 - 1 <= 6; x_offset1 += 2)
+                                            for (y_offset1 = 0; y_offset1 + lungime_piesa1 - 1 <= 8; y_offset1 += 2)
+                                            {
+                                                asezare_corecta1 = 1;
+                                                copiere_matrice_tarc(matrice_Tarc, matrice_tarc_temporar);
+                                                for (int i = 1; i < inaltime_piesa1 + 1; i++)
+                                                    for (int j = 1; j < lungime_piesa1 + 1; j++)
+                                                    {
+                                                        if (matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] == 'g' && matrice_L[i][j] == 'g')
+                                                            matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] = 'X';
+                                                        else if (matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] == 'g' && matrice_L[i][j] == 'q')
+                                                            matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] = 'g';
+                                                        else if (matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] == 'g' && matrice_L[i][j] == '#')
+                                                            matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] = 'g';
+                                                        else if (matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] == '#')
+                                                            matrice_tarc_temporar[i + x_offset1 - 1][j + y_offset1 - 1] = matrice_L[i][j];
+                                                    }
+                                                for (int i = 0; i < 7; i++)
+                                                    for (int j = 0; j < 9; j++)
+                                                        if (matrice_tarc_temporar[i][j] == 'X')
+                                                            asezare_corecta1 = 0;
+
+                                                if (asezare_corecta1 == 1)
+                                                {
+                                                    copiere_matrice_tarc(matrice_tarc_temporar, matrice_Tarc);
+                                                    copiere_matrice_tarc(matrice_Tarc, stiva_table_de_joc[3]);
+                                                    if (verificare_victorie() == 1)
+                                                        return 1;
+                                                }
+                                                else continue;
+                                                copiere_matrice_tarc(stiva_table_de_joc[2], matrice_Tarc);
+
+                                            }
+                                        roteste(matrice_L);
+                                        intSwap(lungime_piesa1, inaltime_piesa1);
+                                        rotiri1++;
+                                    }
+                                    if (verificare_victorie() == 1)
+                                        return 1;
+                                }
+                                else continue;
+                                copiere_matrice_tarc(stiva_table_de_joc[1], matrice_Tarc);
+
+                            }
+                        roteste(matrice_gard_lung);
+                        intSwap(lungime_piesa2, inaltime_piesa2);
+                        rotiri2++;
+                    }
+                    if (verificare_victorie() == 1)
+                        return 1;
+                }
+                else continue;
+                copiere_matrice_tarc(stiva_table_de_joc[0], matrice_Tarc);
+
+            }
+        roteste(matrice_gard_scurt);
+        intSwap(lungime_piesa3, inaltime_piesa3);
+        rotiri3++;
     }
     return 0;
 }
