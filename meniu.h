@@ -109,6 +109,7 @@ void lvl_buttons_interactions(Button& buton, char numar_buton, RenderWindow& win
 }
 void show_nivele()
 {
+    initializare_matrice_piese();
     index_tabla_curenta = 0;
     index_pozitie_curenta_piesa_utilizata = 0;
     for (int i = 1; i <= 4; i++)

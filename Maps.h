@@ -234,7 +234,7 @@ void show_custom(char matr[7][9])
 {
     int ok = 0;
 
-    RenderWindow window_1(VideoMode(1000, 900), "my window", Style::Default);
+    RenderWindow window_1(VideoMode(1000, 900), "my window", Style::Close);
 
     Button buton1(" ", { 60,60 }, 25, Color::Transparent, Color::White);
     buton1.setPos({ 930,10 });
@@ -521,7 +521,7 @@ void show_custom(char matr[7][9])
 void show_harta(char nivel)
 {
     int ok = 0;
-    RenderWindow window_1(VideoMode(1000, 900), "my window", Style::Default);
+    RenderWindow window_1(VideoMode(1000, 900), "my window", Style::Close);
 
     Button buton1(" ", { 60,60 }, 25, Color::Transparent, Color::White);
     buton1.setPos({ 930,10 });
