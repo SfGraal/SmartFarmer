@@ -2,18 +2,24 @@
 #include <iostream>
 
 #include "utilitati.h"
+#include "Button.h"
+#include "functii_drag_piese.h"
+#include "functii_piese_butoane.h"
+#include "Maps.h"
+#include "meniu.h"
 
 #pragma warning(disable : 4996)
 
 using namespace std;
 
+char matrice_Tarc[7][9];
 char matrice_L[9][9];
 char matrice_gard_lung[9][9];
 char matrice_gard_scurt[9][9];
 char matrice_piesa_curenta[9][9];
 char stiva_table_de_joc[4][7][9];
 int index_tabla_curenta = 0;
-int piese_utilizate[3] = { 0 }, index_pozitie_curenta_piese_utilizate = 0;
+extern int piese_utilizate[3] = { 0 }, index_pozitie_curenta_piese_utilizate = 0;
 
 void initializare_matrice_piese()
 {
@@ -81,8 +87,8 @@ void snap_top_left(char mat[9][9]) {
     }
     matrice_temporara[0][0] = mat[0][0];
     matrice_temporara[0][8] = mat[0][8];
+    matrice_temporara[8][0] = mat[8][0];
     matrice_temporara[8][8] = mat[8][8];
-    matrice_temporara[7][0] = mat[7][0];
     for (int i = 0; i < 9; i++) {
         for (int j = 0; j < 9; j++) {
             mat[i][j] = matrice_temporara[i][j];
@@ -103,7 +109,7 @@ void roteste(char m[9][9])
     }
     for (int i = 0; i < 9; i++)
     {
-        for (int j = 0; j < 4; j++)
+        for (int j = 0; j < 5; j++)
         {
             std::swap(m[i][j], m[i][9 - j - 1]);
         }
@@ -125,7 +131,7 @@ void copiere_matrice_tarc(char sursa[7][9], char destinatie[7][9])
             destinatie[i][j] = sursa[i][j];
 }
 
-int plasare_piesa(int index_piesa_selectata) /// returneaza 1 = piesa plasata; returneaza 0 = piesa nu a fost plasata(adica trebuie selectata una noua); returneaza -1 = program incheiat
+/*int plasare_piesa(int index_piesa_selectata) /// returneaza 1 = piesa plasata; returneaza 0 = piesa nu a fost plasata(adica trebuie selectata una noua); returneaza -1 = program incheiat
 {
     char matrice_tarc_temporar[7][9];
     int lungime_piesa, inaltime_piesa;
@@ -185,20 +191,7 @@ selectare_actiune:
             x_offset -= 2;
         while (y_offset + lungime_piesa > 9)
             y_offset -= 2;
-        copiere_matrice_tarc(matrice_Tarc, matrice_tarc_temporar);
-        for (int i = 1; i < inaltime_piesa + 1; i++)
-            for (int j = 1; j < lungime_piesa + 1; j++)
-            {
-                if (matrice_tarc_temporar[i + x_offset - 1][j + y_offset - 1] == 'g' && matrice_piesa_curenta[i][j] == 'g')
-                    matrice_tarc_temporar[i + x_offset - 1][j + y_offset - 1] = 'x';
-                else if (matrice_tarc_temporar[i + x_offset - 1][j + y_offset - 1] == 'g' && matrice_piesa_curenta[i][j] == 'q')
-                    matrice_tarc_temporar[i + x_offset - 1][j + y_offset - 1] = 'G';
-                else if (matrice_tarc_temporar[i + x_offset - 1][j + y_offset - 1] == 'g' && matrice_piesa_curenta[i][j] == '#')
-                    matrice_tarc_temporar[i + x_offset - 1][j + y_offset - 1] = 'G';
-                else if (matrice_tarc_temporar[i + x_offset - 1][j + y_offset - 1] == '#')
-                    matrice_tarc_temporar[i + x_offset - 1][j + y_offset - 1] = matrice_piesa_curenta[i][j];
-
-            }
+        
         goto selectare_actiune;
         break;
     case 8:///backspace
@@ -257,6 +250,7 @@ selectare_actiune:
         break;
     }
 }
+*/
 
 bool verificare_victorie()
 {
@@ -293,6 +287,7 @@ bool verificare_victorie()
 
 bool rezolvare_automata()
 {
+    initializare_matrice_piese();
     ///piesa1 = piesa L ; piesa2 = piesa lunga ; piesa3 = piesa scurta
     for (int i = 0; i < 4; i++)
         copiere_matrice_tarc(stiva_table_de_joc[0], stiva_table_de_joc[i]);
@@ -300,9 +295,9 @@ bool rezolvare_automata()
     int x_offset1 = 0, x_offset2 = 0, x_offset3 = 0;
     int y_offset1 = 0, y_offset2 = 0, y_offset3 = 0;
     char matrice_tarc_temporar[7][9];
-    int lungime_piesa1 = 3, inaltime_piesa1 = 5;
-    int lungime_piesa2 = 1, inaltime_piesa2 = 7;
-    int lungime_piesa3 = 1, inaltime_piesa3 = 5;
+    int lungime_piesa1 = 5, inaltime_piesa1 = 3;
+    int lungime_piesa2 = 7, inaltime_piesa2 = 1;
+    int lungime_piesa3 = 5, inaltime_piesa3 = 1;
     bool asezare_corecta1 = 1;
     bool asezare_corecta2 = 1;
     bool asezare_corecta3 = 1;
@@ -520,7 +515,7 @@ bool rezolvare_automata()
     while (rotiri2 <= 1)
     {
         for (x_offset2 = 0; x_offset2 + inaltime_piesa2 - 1 <= 6; x_offset2 += 2)
-            for (y_offset2 = 0; y_offset2+ lungime_piesa2 - 1 <= 8; y_offset2 += 2)
+            for (y_offset2 = 0; y_offset2 + lungime_piesa2 - 1 <= 8; y_offset2 += 2)
             {
                 asezare_corecta2 = 1;
                 copiere_matrice_tarc(matrice_Tarc, matrice_tarc_temporar);
@@ -931,3 +926,127 @@ bool rezolvare_automata()
     }
     return 0;
 }
+
+/*void initializareBackend()
+{
+
+    
+    while (playing)
+    {
+    selectare_actiune:
+        cout << "Selecteaza o actiune:" << endl << "-Plasare piesa:tasta p" << endl << "-Undo miscare:tasta u" << endl << "-Rezolvare automata a nivelului:tasta 'a'(ATENTIE!Pentru a folosi rezolvarea automata, tabla trebuie sa fie goala)" << endl;
+        switch (getch())
+        {
+        case 'p':
+        selectare_piesa:system("CLS");
+            afisare_nivel(matrice_Tarc);
+            cout << "Selecteaza piesa:" << endl << "1.Piesa in forma de L" << endl << "2.Piesa dreapta lunga" << endl << "3.Piesa dreapta scurta" << endl;
+            switch (getch())
+            {
+            case '1':
+                index_piesa_Selectata = 1;
+                for (int i = 0; i < index_pozitie_curenta_piese_utilizate; i++)
+                    if (piese_utilizate[i] == index_piesa_Selectata)
+                    {
+                        cout << "Piesa a fost deja utilizata.Apasati orice tasta pentru a continua.";
+                        getch();
+                        goto selectare_piesa;
+                    }
+                piese_utilizate[index_pozitie_curenta_piese_utilizate] = index_piesa_Selectata;
+                index_pozitie_curenta_piese_utilizate++;
+                system("CLS");
+                afisare_nivel(matrice_Tarc);
+                cout << "Ai selectat piesa in forma de L.Apasati orice tasta pentru a continua." << endl;
+                copiere_matrice_piese(matrice_L, matrice_piesa_curenta);
+                getch();
+                break;
+            case '2':
+                index_piesa_Selectata = 2;
+                for (int i = 0; i < index_pozitie_curenta_piese_utilizate; i++)
+                    if (piese_utilizate[i] == index_piesa_Selectata)
+                    {
+                        cout << "Piesa a fost deja utilizata.Apasati orice tasta pentru a continua.";
+                        getch();
+                        goto selectare_piesa;
+                    }
+                piese_utilizate[index_pozitie_curenta_piese_utilizate] = index_piesa_Selectata;
+                index_pozitie_curenta_piese_utilizate++;
+                system("CLS");
+                afisare_nivel(matrice_Tarc);
+                cout << "Ai selectat piesa dreapta lunga.Apasati orice tasta pentru a continua." << endl;
+                copiere_matrice_piese(matrice_gard_lung, matrice_piesa_curenta);
+                getch();
+                break;
+            case '3':
+                index_piesa_Selectata = 3;
+                for (int i = 0; i < index_pozitie_curenta_piese_utilizate; i++)
+                    if (piese_utilizate[i] == index_piesa_Selectata)
+                    {
+                        cout << "Piesa a fost deja utilizata.Apasati orice tasta pentru a continua.";
+                        getch();
+                        goto selectare_piesa;
+                    }
+                piese_utilizate[index_pozitie_curenta_piese_utilizate] = index_piesa_Selectata;
+                index_pozitie_curenta_piese_utilizate++;
+                system("CLS");
+                afisare_nivel(matrice_Tarc);
+                cout << "Ai selectat piesa dreapta scurta.Apasati orice tasta pentru a continua." << endl;
+                copiere_matrice_piese(matrice_gard_scurt, matrice_piesa_curenta);
+                index_piesa_Selectata = 3;
+                getch();
+                break;
+            case 27: ///ASCII 32=tasta escape
+                playing = false;
+                break;
+            default:
+                cout << "Selectie invalida! Va rugam faceti o selectie valida." << endl;
+                goto selectare_piesa;
+                break;
+            }
+            system("CLS");
+            afisare_nivel(matrice_Tarc);
+            if (playing)
+            {
+                int cod_returnare = plasare_piesa(index_piesa_Selectata);
+                if (cod_returnare == -1)
+                    playing = false;
+                else if (cod_returnare == 0)
+                    goto selectare_piesa;
+                else if (cod_returnare == 1)
+                    if (verificare_victorie() == true)
+                    {
+                        system("CLS");
+                        afisare_nivel(matrice_Tarc);
+                        cout << "Felicitari!Ati castigat!Apasati ENTER pentru a rejuca sau Esc pentru a iesi.";
+                        switch (getch())
+                        {
+                        case 13:
+                            goto _inceput_joc;
+                            break;
+                        case 27:
+                            playing = 0;
+                            break;
+                        }
+                    }
+            }
+            break;
+        case 'u':
+            if (index_tabla_curenta >= 1)
+            {
+                system("CLS");
+                index_tabla_curenta--;
+                copiere_matrice_tarc(stiva_table_de_joc[index_tabla_curenta], matrice_Tarc);
+                index_pozitie_curenta_piese_utilizate--;
+                piese_utilizate[index_pozitie_curenta_piese_utilizate] = 0;
+                afisare_nivel(matrice_Tarc);
+            }
+            else {
+                cout << "Tabla de joc este cea originala.";
+            }
+            break;
+
+        }
+    }
+
+}
+*/

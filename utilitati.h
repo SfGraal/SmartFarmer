@@ -1,47 +1,50 @@
+#ifndef UNELTE_PIESE_H
+#define UNELTE_PIESE_H
+
+bool verificare_victorie();
+
+#endif
 #pragma once
 #include <iostream>
 
 #include "unelte_piese.h"
+#include "Button.h"
+#include "functii_drag_piese.h"
+#include "functii_piese_butoane.h"
+#include "Maps.h"
+#include "meniu.h"
 
 #pragma warning(disable : 4996)
 
 using namespace std;
 
-char matrice_tarc_temporar[7][9];
-char matrice_Tarc[7][9];
-
-void initializare_Nivel(char tarc[7][9])
+void initializare_Nivel(char tarc[7][9], char nivel)
 {
     char buffer;
-    FILE* ftarc;
-    int nivel;
+    FILE* ftarc = 0;
 
-select_nivel:
-    cout << "selectaza nivelul: ";
-    cin >> nivel;
     switch (nivel)
     {
-    case 1:
+    case '1':
         ftarc = fopen("Nivele\\nivel1.txt", "r+");
         break;
-    case 2:
+    case '2':
         ftarc = fopen("Nivele\\nivel2.txt", "r+");
         break;
-    case 3:
+    case '3':
         ftarc = fopen("Nivele\\nivel3.txt", "r+");
         break;
-    case 4:
+    case '4':
         ftarc = fopen("Nivele\\nivel4.txt", "r+");
         break;
-    case 5:
+    case '5':
         ftarc = fopen("Nivele\\nivel5.txt", "r+");
         break;
     default:
-        cout << "nivel invalid\n";
-        goto select_nivel;
         break;
     }
     system("CLS");
+
 
     for (int i = 0; i < 7; i++)
     {
@@ -53,7 +56,12 @@ select_nivel:
         fread(&buffer, sizeof(char), 1, ftarc);
     }
     fclose(ftarc);
+
+    copiere_matrice_tarc(matrice_Tarc, stiva_table_de_joc[0]);
+    for (int i = 0; i < 4; i++)
+        copiere_matrice_tarc(matrice_Tarc, stiva_table_de_joc[i]);
 }
+
 
 void afisare_nivel(char tarc[7][9])
 {
@@ -99,22 +107,9 @@ void fill_victorie(int i, int j,char matrice_temporara[7][9],char vector_animale
         fill_victorie(i-1, j, matrice_temporara, vector_animale, indice_vector_animale, contor_troaca);
 }
 
-int genereaza_nivel(char matrice_Tarc[7][9])
+void genereaza_nivel(char matrice_Tarc[7][9])
 {
     system("CLS");
-    cout << "Atentie! Nivelele generate sunt complet aleatorii." << endl << "Exista sanse ca acestea sa fie imposibil de rezolvat." << endl << "Daca doriti sa jucati indiferent, apasati tasta ENTER.Daca doriti sa va intoarceti, apasati tasta BACKSPACE";
-avertisment_selectie:
-    char selectie=getch();
-    switch (selectie)
-    {
-    case 8:
-        return 0;
-    case 13:
-        goto generare_nivel;
-        break;
-    default:
-        goto avertisment_selectie;
-    }
 generare_nivel:
     srand(time(0));
     char buffer;
@@ -203,9 +198,8 @@ generare_nivel:
         for (int j = 1; j < 8; j++)
             if (matrice_Tarc[i][j] == 'a')
                 matrice_Tarc[0][0] = 'd';
-    
-
-    return 1;
+    if (verificare_victorie() == 1)
+        goto generare_nivel;
 }
 
 void intSwap(int& a, int& b)
@@ -223,3 +217,4 @@ void charSwap(char& a, char& b)
     a = b;
     b = aux;
 }
+

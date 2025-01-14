@@ -1,0 +1,34 @@
+ ---------------
+| REGULI DE JOC |
+ ---------------
+Desparte terenul in țarcuri separate folosind gardurile:
+
+   - Caii, vacile, oile și porcii trebuie sa fie in țarcuri separate;
+
+   - În nivelele mai dificile, în care sunt si troace de apă, fiecare țarc, pe lângă animale, trebuie sa conțină și câte o troacă cu apă;
+
+   - Nu este necesară folosirea tuturor gardurilor, unele nivele se pot rezolva folosind doar unul sau două dintre garduri;
+
+   - Gardurile ar trebui plasate cu colțurile rotunjite, în partea superioară;
+
+   - Este permisă schimbarea poziției doar în cazul celor trei garduri oferite la dispoziție jucătorului; nu este permisă mutarea/rotirea altor elemente de pe harta de joc;
+
+   -Toate țarcurile create trebuie să fie ocupate, nu se permite lăsarea unor țarcuri goale;
+
+ -------------
+| CUM SĂ JOCI |
+ -------------
+   Folosind mouse-ul, trage piesele (cele 3 garduri oferite la dispoziție)    în spațiile în care dorești să fie așezate pe harta.
+
+   -->CUM MUȚI O PIESĂ:
+	- Mută mouse-ul deasupra piesei pe care dorești să o muți și ține apăsat clik-stânga în timp ce muți mouse-ul în poziția în care dorești să fie piesa; piesa va urma direcția mouse-ului;
+
+   -->CUM ROTEȘTI O PIESĂ:
+	- Mută mouse-ul deasupra piesei pe care dorești să o rotești și apasă click-dreapta; 
+
+   -->CUM FIXEZI O PIESĂ ÎN POZIȚIA DORITĂ:
+	- Dacă te-ai hotărât să fixezi o piesă, mută mouse-ul deasupra piesei pe care dorești să o fixezi și apasă tasta "Enter" ; astfel, piesa nu va mai putea fi mișcată și va rămâne în poziția dorită;
+
+   -->DACĂ TE-AI RĂZGÂNDIT ȘI VREI SĂ MUȚI O PIESĂ DEJA FIXATĂ, mută mouse-ul deasupra piesei pe care dorești să o muți și apasă tasta "Backspace"; astfel, piesa va putea fi folosită din nou;
+
+

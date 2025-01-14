@@ -26,5 +26,20 @@
     <ClInclude Include="utilitati.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Button.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="functii_drag_piese.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="functii_piese_butoane.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="meniu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Maps.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
