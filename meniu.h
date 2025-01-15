@@ -6,6 +6,8 @@
 #include "functii_piese_butoane.h"
 #include "functii_drag_piese.h"
 #include "Maps.h";
+
+
 using namespace sf;
 using namespace std;
 
@@ -13,7 +15,7 @@ void show_nivele();
 void goBack();      
 void show_menu();
 void show_win();
-void show_harta();
+void show_harta(char nivel);
 void show_custom(char matr[7][9]);
 
 extern char matrice_Tarc[7][9];
@@ -52,8 +54,7 @@ void goBack()
     if (historyIndex >= 0) 
     {
         currentState = stateHistory[historyIndex--];
-
-        std::cout << "Stare curentă: ";
+        std::cout <<"Stare curentă: ";
         switch (currentState) {
         case MAIN_MENU:
             std::cout << "MAIN_MENU\n";
@@ -76,14 +77,14 @@ void goBack()
             show_win();
             break;
         default:
-            std::cout << "STARE NECUNOSCUTĂ\n";
+            std::cout <<"STARE NECUNOSCUTĂ\n";
             break;
         }
 
     }
     else 
     {
-        std::cout << "Nu există stări anterioare!\n";
+        std::cout <<"Nu există stări anterioare!\n";
     }
 }
 
@@ -271,7 +272,6 @@ void show_menu()
 {
     index_tabla_curenta = 0;
     initializare_matrice_piese();
-    
 
     RectangleShape scris(Vector2f(350.f, 250.f));
     Texture scris_texture;

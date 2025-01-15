@@ -13,7 +13,7 @@
 using namespace std;
 
 char matrice_Tarc[7][9];
-char matrice_L[9][9];
+char matrice_L[9][9] = { 0 };
 char matrice_gard_lung[9][9];
 char matrice_gard_scurt[9][9];
 char matrice_piesa_curenta[9][9];

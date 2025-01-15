@@ -16,7 +16,7 @@ int show_fermier;
 int directie;
 int piese_utilizate[3];
 int index_pozitie_curenta_piesa_utilizata = -1;
-int used[4];
+int used[5];
 bool rezolvare_automata();
 
 char mat[7][9] = {
@@ -233,6 +233,8 @@ void show_solved(char mat[7][9], RenderWindow& window)
 void show_custom(char matr[7][9])
 {
     int ok = 0;
+    for (int i = 0; i < 4; i++)
+        copiere_matrice_tarc(matrice_Tarc, stiva_table_de_joc[i]);
 
     RenderWindow window_1(VideoMode(1000, 900), "my window", Style::Close);
 
@@ -521,6 +523,10 @@ void show_custom(char matr[7][9])
 void show_harta(char nivel)
 {
     int ok = 0;
+
+    for (int i = 0; i < 4; i++)
+        copiere_matrice_tarc(matrice_Tarc, stiva_table_de_joc[i]);
+
     RenderWindow window_1(VideoMode(1000, 900), "my window", Style::Close);
 
     Button buton1(" ", { 60,60 }, 25, Color::Transparent, Color::White);
